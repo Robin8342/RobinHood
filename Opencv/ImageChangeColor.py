@@ -26,10 +26,15 @@ ColorImageSize = cv2.resize(Img_color,dsize=(0,0), fx=0.5, fy=0.5, interpolation
 GrayImageSize = cv2.resize(Img_gray,dsize=(0,0), fx=0.6, fy=0.6, interpolation=cv2.INTER_LINEAR)
 """
 
+#imwrite -> ImageSave Address
 while True:
     cv2.imshow('Show Color Image',ColorImageSize)
     cv2.imshow('Show Gray Image',GrayImageSize)
     if cv2.waitKey(1) == ord('q'):
+        cv2.imwrite('./Image/ChangeColorImage.jpg',GrayImageSize)
         break
+
+
+
 
 cv2.destroyAllWindows() #all windows cash memory destroy
