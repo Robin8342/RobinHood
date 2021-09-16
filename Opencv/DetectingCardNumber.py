@@ -6,13 +6,22 @@ import imutils
 
 #CNN을 이용해서 카드의 실제 이미지를 수집하고 학습시켜 글자를 손쉽게 디텍팅 할 수 도 있다.
 
+CAM_ID = 0
+def capture(camid = CAM_ID):
+    cam = cv.VideoCapture(camid, )
+
+
 ap = argparse.ArgumentParser()
 
+
+"""사진을 코드상 입력해서 디텍팅 하는 방법
 #OCR-A 글꼴에 0~9의 숫자가 포함된다.
 ap.add_argument("-i", "--image", required=True,
                 help="path to input image")
 ap.add_argument("-r", "--reference", required=True,
                 help="path to reference OCR-A image")
+"""
+
 
 args = vars(ap.parse_args())
 
