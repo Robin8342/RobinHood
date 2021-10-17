@@ -1,17 +1,18 @@
+#모델 학습 데이터를 미리 학습한다고 해도. EPOCH에 넣어서 이미지를 테스팅 해야되는건 똑같다. 물론 도커에 올려서 비교할 수 있는 방법도 있다.
+
+
 import urllib.request
-#efs
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from tensorflow.keras.models import load_model
 
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-
-#os.path.dirname 경로 중 디렉토리명만 얻기
-#os.path.join path들을 묶어 하나의 경로로 만들기
+model = load_model('./TestFolder/TensorflowCNNCreateData.h5')
 PATH = os.path.join("./cats_and_dogs_filtered")
 
 #os.listdir path 하위에 있는 파일, 디렉토리 리스트를 보여준다.
@@ -24,16 +25,6 @@ validation_path = os.path.join(PATH, 'validation')
 #image의 rescale = 픽셀값을 조정한다.
 original_datagen = ImageDataGenerator(rescale=1./255)
 
-"""
-rescale = 픽셀값
-rotation_range = 이미지 회전
-width_shift_range = 가로 방향 이동
-height_shift_range = 세로 방향 이동
-shear_range = 이미지 굴절
-zoom_range = 이미지 확대
-horizontal_flip = 횡 방향으로 이미지 반전
-fill_mode = 이미지를 이동이나 굴절시 빈 픽셀 값을 채우는 방식
-"""
 training_datagen = ImageDataGenerator(
     rescale=1. / 255,
     rotation_range=30,
@@ -64,51 +55,6 @@ validation_generator = training_datagen.flow_from_directory(validation_path,
                                                             class_mode='binary'
                                                            )
 
-for x, y in original_generator:
-    pic = x[:5]
-    break
-
-conv2d = Conv2D(64, (3, 3), input_shape=(150, 150, 3))
-conv2d_activation = Conv2D(64, (3, 3), activation='relu', input_shape=(150, 150, 3))
-
-fig, axes = plt.subplots(8, 8)
-fig.set_size_inches(16, 16)
-for i in range(64):
-    axes[i//8, i%8].imshow(conv2d(pic)[0,:,:,i], cmap='gray')
-    axes[i//8, i%8].axis('off')
-
-fig, axes = plt.subplots(8, 8)
-fig.set_size_inches(16, 16)
-for i in range(64):
-    axes[i//8, i%8].imshow(conv2d_activation(pic)[0,:,:,i], cmap='gray')
-    axes[i//8, i%8].axis('off')
-
-fig, axes = plt.subplots(8, 8)
-fig.set_size_inches(16, 16)
-for i in range(64):
-    axes[i//8, i%8].imshow(MaxPooling2D(2, 2)(conv2d(pic))[0, :, :, i], cmap='gray')
-    axes[i//8, i%8].axis('off')
-
-def Sequential():
-    model = tf.keras.models.Sequential([
-        Conv2D(16, (3, 3), padding='same', activation='relu', input_shape=(150, 150, 3)),
-        MaxPooling2D(2, 2),
-        Conv2D(32, (3, 3), padding='same', activation='relu'),
-        MaxPooling2D(2, 2),
-        Conv2D(64, (3, 3), padding='same', activation='relu'),
-        MaxPooling2D(2, 2),
-        Flatten(),
-        Dense(512, activation='relu'),
-        Dense(1, activation='sigmoid'),
-    ])
-
-    return model
-#build model
-model = Sequential()
-
-#지워도댐
-#model.summary()
-
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
 
 epochs = 25
@@ -116,9 +62,6 @@ epochs = 25
 history = model.fit(training_generator,
                     validation_data= validation_generator,
                     epochs=epochs)
-
-model.save('./TestFolder/TensorflowCNNCreateData.h5')
-
 
 #학습결과 확인
 plt.figure(figsize=(9, 6))
@@ -129,3 +72,5 @@ plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(['loss', 'val_loss'], fontsize=15)
 plt.show()
+
+
